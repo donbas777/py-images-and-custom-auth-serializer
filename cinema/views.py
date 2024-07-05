@@ -4,7 +4,6 @@ from django.db.models import F, Count
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -119,13 +118,9 @@ class MovieViewSet(
     def upload_image(self, request, pk=None):
         item = self.get_object()
         serializer = self.get_serializer(item, data=request.data)
-
-        try:
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except ValidationError as e:
-            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class MovieSessionViewSet(viewsets.ModelViewSet):
